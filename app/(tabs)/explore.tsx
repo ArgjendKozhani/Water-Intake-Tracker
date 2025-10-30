@@ -1,28 +1,22 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { Collapsible } from '@/components/ui/collapsible';
-import { ExternalLink } from '@/components/external-link';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { IconSymbol } from '@/components/ui/icon-symbol';
-import { Fonts } from '@/constants/theme';
+import { StyleSheet } from 'react-native';
 
 export default function TabTwoScreen() {
   return (
-<></>
+    <ThemedView style={styles.container}>
+      <ThemedText type="title">Explore</ThemedText>
+      <ThemedText style={styles.subtitle}>Discover tips and examples</ThemedText>
+    </ThemedView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
+    padding: 20,
   },
-  titleContainer: {
-    flexDirection: 'row',
-    gap: 8,
+  subtitle: {
+    marginTop: 8,
   },
 });
