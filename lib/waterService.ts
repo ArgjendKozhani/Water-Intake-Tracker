@@ -4,6 +4,9 @@ export type WaterEntry = {
   id: string;
   user_id: string;
   cups: number;
+  bottles: number;
+  start_time: string;
+  end_time: string;
   date: string;
   created_at?: string;
 };
@@ -22,7 +25,7 @@ export async function getEntries(): Promise<WaterEntry[]> {
     .select('*')
     .eq('user_id', userId)
     .order('date', { ascending: false })
-    .order('created_at', { ascending: false });
+    .order('start_time', { ascending: false });
 
   if (error) {
     console.error('getEntries error', error);
@@ -32,7 +35,12 @@ export async function getEntries(): Promise<WaterEntry[]> {
   return (data as WaterEntry[]) ?? [];
 }
 
-export async function addEntry(cups: number): Promise<WaterEntry | null> {
+export async function addEntry(data: {
+  cups: number;
+  bottles: number;
+  start_time: string;
+  end_time: string;
+}): Promise<WaterEntry | null> {
   const userId = await getUserId();
   if (!userId) {
     console.error('addEntry error: No user ID found');
@@ -40,9 +48,15 @@ export async function addEntry(cups: number): Promise<WaterEntry | null> {
   }
 
   try {
-    const { data, error } = await supabase
+    const { data: result, error } = await supabase
       .from('water_intake')
-      .insert([{ user_id: userId, cups }])
+      .insert([{ 
+        user_id: userId,
+        cups: data.cups,
+        bottles: data.bottles,
+        start_time: data.start_time,
+        end_time: data.end_time,
+      }])
       .select()
       .single();
 
@@ -51,17 +65,21 @@ export async function addEntry(cups: number): Promise<WaterEntry | null> {
       return null;
     }
 
-    return data as WaterEntry;
+    return result as WaterEntry;
   } catch (err) {
     console.error('addEntry unexpected error:', err);
     return null;
   }
 }
 
-export async function updateEntry(id: string, cups: number): Promise<WaterEntry | null> {
+export async function updateEntry(id: string, updates: Partial<Omit<WaterEntry, 'id' | 'user_id' | 'created_at'>>): Promise<WaterEntry | null> {
   const { data, error } = await supabase
     .from('water_intake')
-    .update({ cups })
+    .update({
+      ...updates,
+      // Update the date if start_time is provided
+      ...(updates.start_time && { date: new Date(updates.start_time).toISOString().split('T')[0] })
+    })
     .eq('id', id)
     .select()
     .single();

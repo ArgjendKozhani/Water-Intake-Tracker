@@ -8,6 +8,10 @@
     "scheme": "waterintaketracker",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "notifications": {
+      "icon": "./assets/images/icon.png",
+      "color": "#ffffff"
+    },
     "ios": {
       "supportsTablet": true
     },
