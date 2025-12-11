@@ -1,6 +1,6 @@
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
-import { Modal, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Keyboard, KeyboardAvoidingView, Modal, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, TouchableWithoutFeedback, View } from 'react-native';
 import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
@@ -43,8 +43,16 @@ export function WaterIntakeModal({ visible, onClose, onSubmit }: WaterIntakeModa
 
   return (
     <Modal visible={visible} transparent animationType="slide">
-      <View style={styles.centeredView}>
-        <ThemedView style={styles.modalView}>
+      <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+        <KeyboardAvoidingView 
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          style={styles.centeredView}
+        >
+          <ScrollView 
+            contentContainerStyle={styles.scrollContainer}
+            keyboardShouldPersistTaps="handled"
+          >
+            <ThemedView style={styles.modalView}>
           <ThemedText type="subtitle" style={styles.modalTitle}>
             Add Water Intake
           </ThemedText>
@@ -114,8 +122,10 @@ export function WaterIntakeModal({ visible, onClose, onSubmit }: WaterIntakeModa
               <ThemedText style={styles.buttonText}>Submit</ThemedText>
             </TouchableOpacity>
           </View>
-        </ThemedView>
-      </View>
+            </ThemedView>
+          </ScrollView>
+        </KeyboardAvoidingView>
+      </TouchableWithoutFeedback>
     </Modal>
   );
 }
@@ -123,9 +133,12 @@ export function WaterIntakeModal({ visible, onClose, onSubmit }: WaterIntakeModa
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  scrollContainer: {
+    flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
     width: '90%',

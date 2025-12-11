@@ -23,6 +23,9 @@ try {
 const supabaseUrl = process.env.EXPO_PUBLIC_SUPABASE_URL ?? '';
 const supabaseAnonKey = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY ?? '';
 
+console.log('Supabase URL:', supabaseUrl ? `${supabaseUrl.substring(0, 30)}...` : 'NOT SET');
+console.log('Supabase Key:', supabaseAnonKey ? `${supabaseAnonKey.substring(0, 20)}...` : 'NOT SET');
+
 // -------------------------------------------------------------------
 // 2. Storage that satisfies Supabase's `Storage` interface
 // The exact type for Supabase's storage is different between versions; use a
@@ -60,6 +63,7 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
     storage,
     autoRefreshToken: true,
+    // Persist session so user stays logged in
     persistSession: true,
     detectSessionInUrl: Platform.OS === 'web', // OAuth redirects only on web
   },

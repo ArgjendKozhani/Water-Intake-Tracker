@@ -12,13 +12,25 @@ export type WaterEntry = {
 };
 
 async function getUserId(): Promise<string | null> {
-  const { data: { user } } = await supabase.auth.getUser();
-  return user?.id ?? null;
+  try {
+    const { data: { session }, error } = await supabase.auth.getSession();
+    if (error) {
+      console.warn('Auth session fetch error:', error.message);
+      return null;
+    }
+    return session?.user?.id ?? null;
+  } catch (e) {
+    console.warn('Auth session unexpected error:', e);
+    return null;
+  }
 }
 
 export async function getEntries(): Promise<WaterEntry[]> {
   const userId = await getUserId();
-  if (!userId) return [];
+  if (!userId) {
+    console.log('getEntries: no authenticated user, returning empty list');
+    return [];
+  }
 
   const { data, error } = await supabase
     .from('water_intake')
@@ -43,7 +55,7 @@ export async function addEntry(data: {
 }): Promise<WaterEntry | null> {
   const userId = await getUserId();
   if (!userId) {
-    console.error('addEntry error: No user ID found');
+    console.warn('addEntry: no authenticated user, aborting insert');
     return null;
   }
 
@@ -56,7 +68,9 @@ export async function addEntry(data: {
         bottles: data.bottles,
         start_time: data.start_time,
         end_time: data.end_time,
-      }])
+        // Derive `date` from start_time to satisfy NOT NULL constraint in DB
+        date: new Date(data.start_time).toISOString().split('T')[0],
+        }])
       .select()
       .single();
 
