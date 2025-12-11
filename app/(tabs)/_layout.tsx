@@ -60,6 +60,20 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
+        name="ratings"
+        options={{
+          title: 'Ratings',
+          tabBarIcon: ({ color, focused }) => (
+            <IconSymbol 
+              name="star.fill" 
+              color={focused ? activeTintColor : inactiveTintColor} 
+              size={focused ? 24 : 20} 
+            />
+          ),
+          tabBarButton: HapticTab,
+        }}
+      />
+      <Tabs.Screen
         name="profile"
         options={{
           title: 'Profile',
